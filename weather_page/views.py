@@ -46,11 +46,7 @@ def index(request):
         form = CityForm(request.POST)
         form.save()
 
-    # endure_ten_seconds()
-    # some_task.endure_ten_seconds()
-
     form = CityForm()
-    print("counter = ", counter)
 
     last_query_city = list(City.objects.all())
     if last_query_city == []:

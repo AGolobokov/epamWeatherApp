@@ -4,11 +4,15 @@ from django.db import models
 
 
 class Weather(models.Model):
-    name = models.CharField(max_length=50)
+    city_name = models.CharField(max_length=50)
     date = models.DateField()
+    temp = models.CharField(max_length=50)
     precipitation = models.CharField(max_length=50)
     wind = models.CharField(max_length=50)
     wind_direction = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = 'weather_db'
 
 
 class City(models.Model):
