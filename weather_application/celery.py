@@ -11,18 +11,11 @@ app.conf.broker_url = 'redis://localhost:6379/0'
 # Load task modules from all registered Django app configs.
 app.autodiscover_tasks(settings.INSTALLED_APPS)
 
-from weather_page.tasks import counter
-
 
 app.conf.beat_schedule = {
     'my-task': {
-                # Регистрируем задачу. Для этого в качестве значения ключа task
-                # Указываем полный путь до созданного нами ранее таска(функции)
-        'task': 'weather_page.tasks.endure_ten_seconds',
-                 # Периодичность с которой мы будем запускать нашу задачу
-                 # minute='*/5' - говор
+        'task': 'weather_page.tasks.periodic_task',
         'schedule': 30.0, #crontab(minute='*/1'),
-                # Аргументы которые будет принимать функция
                 'args': (),
     }
 }

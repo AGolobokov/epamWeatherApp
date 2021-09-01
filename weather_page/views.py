@@ -4,7 +4,6 @@ from .models import City
 from .forms import CityForm
 import datetime
 from bs4 import BeautifulSoup
-from .tasks import endure_ten_seconds, counter
 
 # Create your views here.
 
@@ -22,13 +21,9 @@ def parsing_gismeteo(year, month, req_day)->list:
 
     for row in table.findAll('tr')[0:]:
         data_row = row.findAll('td')
-        # print(data_row)
         day = data_row[0].text
-        # print(day)
         if day == req_day:
-            # print("day ", day)
             temp = data_row[1].text
-            # print('temp ', temp)
             precipitation = data_row[4].find('img')
             if precipitation:
                 precipitation = (precipitation.get('src').split('/')[-1]).split('.')[0]
@@ -72,8 +67,6 @@ def index(request):
     data_list = parsing_gismeteo(str(requested_year), str(requested_month), str(requested_day))
     print(data_list)
 
-    # res = requests.get(url.format(last_query_city[-1].name)).json()
-    # print(res)
     city_info = {
         'city': data_list[0],
         'temp': data_list[1],

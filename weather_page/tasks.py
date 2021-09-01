@@ -1,4 +1,3 @@
-import time
 from weather_application.celery import app
 import requests
 from bs4 import BeautifulSoup
@@ -25,7 +24,7 @@ def parsing_gismeteo(year, month)->list:
     weather_content_soup = BeautifulSoup(res, "html.parser")
 
     table = weather_content_soup.find('tbody')
-
+    one_month_weather_data_list = list()
 
     for row in table.findAll('tr')[0:]:
         data_row = row.findAll('td')
@@ -41,50 +40,89 @@ def parsing_gismeteo(year, month)->list:
         wind = data_row[5].text.split(' ')[-1]
 
         wind_direction = data_row[5].text.split(' ')[0]
-        return ["Saint-Petersburg", temp, precipitation, wind, wind_direction]
+
+        one_day_weather = ["Saint-Petersburg", day, month, year, temp, precipitation, wind, wind_direction]
+        one_month_weather_data_list.append(one_day_weather)
+    return one_month_weather_data_list
 
 
 def write_to_database():
     pass
 
 
-counter = 0
+real_counter = 0
 today_is = datetime.datetime.now()
 
-def count_id():
-    global counter
-    counter += 1
-    return counter
 
+def real_count_id():
+    global real_counter
+    real_counter += 1
+    return real_counter
+
+
+def reset_real_count_id():
+    global real_counter
+    real_counter = 0
+    return real_counter
+
+month_counter = 12
+required_month = required_year = 0
 
 @app.task
-def endure_ten_seconds():
+def periodic_task():
     print("Start period task")
-    weather_data_list = list()
 
-    note_id = count_id()
+    global month_counter
+    global required_month
+    global required_year
+    print('month_counter =', month_counter)
 
-    time.sleep(1)
-    print(today_is)
-    print('day ', today_is.day, ' month ', today_is.month, ' year ',today_is.year)
-    prepare_month_value = 1
-    if today_is.month >= 10:
-        prepare_month_value = today_is.month
-    else:
-        prepare_month_value = '0' + str(today_is.month-1)
-    print(prepare_month_value)
-    weather_data_list = parsing_gismeteo(today_is.year, prepare_month_value)
-    # city_name = models.CharField(max_length=50)
-    # date = models.DateField()
-    # temp = models.CharField(max_length=50)
-    # precipitation = models.CharField(max_length=50)
-    # wind = models.CharField(max_length=50)
-    # wind_direction = models.CharField(max_length=50)
-    date = datetime.datetime(today_is.year, today_is.month, today_is.day)
-    city_n = "Saint-Petersburg"
-    weather_write_db = Weather(note_id, city_n, date,'+30', 'rain', '1m/c', 'N')
-    weather_write_db.save()
-    print(weather_data_list)
+    if month_counter == 12:
+        print(today_is)
+        required_month = today_is.month - 1
+        required_year = today_is.year
+
+    if month_counter > 0:
+
+        if required_month == 1:
+            required_month = 12
+            required_year = required_year - 1
+
+        prepare_month_value = 1
+        prepare_year_value = required_year
+
+        if required_month >= 10:
+            prepare_month_value = required_month
+        else:
+            prepare_month_value = '0' + str(required_month)
+
+        weather_list = parsing_gismeteo(prepare_year_value, prepare_month_value)
+
+        for note in weather_list:
+            print(note)
+            real_id_counter = real_count_id()
+            print("real_id_counter = ", real_id_counter)
+
+            city_name = "Saint-Petersburg"
+            date = datetime.datetime(int(note[3]), int(note[2]), int(note[1]))
+            if note[5]:
+                precipitation_value = note[5]
+            else:
+                precipitation_value = 'No precipitation'
+            weather_write_db = Weather(real_id_counter, city_name, date, note[4], precipitation_value, note[6], note[7])
+
+            weather_write_db.save()
+
+        required_month = required_month - 1
+        month_counter = month_counter - 1
+
+
+
+
+
+
+
+
     print("End period task")
 
 
