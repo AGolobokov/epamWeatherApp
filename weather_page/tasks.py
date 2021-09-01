@@ -25,7 +25,7 @@ def parsing_gismeteo(year, month)->list:
     weather_content_soup = BeautifulSoup(res, "html.parser")
 
     table = weather_content_soup.find('tbody')
-    print()
+
 
     for row in table.findAll('tr')[0:]:
         data_row = row.findAll('td')
@@ -81,7 +81,8 @@ def endure_ten_seconds():
     # wind = models.CharField(max_length=50)
     # wind_direction = models.CharField(max_length=50)
     date = datetime.datetime(today_is.year, today_is.month, today_is.day)
-    weather_write_db = Weather(note_id, 'Moscow', date,'+30', 'rain', '1m/c', 'N')
+    city_n = "Saint-Petersburg"
+    weather_write_db = Weather(note_id, city_n, date,'+30', 'rain', '1m/c', 'N')
     weather_write_db.save()
     print(weather_data_list)
     print("End period task")
