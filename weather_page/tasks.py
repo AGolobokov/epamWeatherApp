@@ -98,7 +98,6 @@ def periodic_task():
         for note in weather_list:
 
             real_id_counter = real_count_id()
-            print("real_id_counter = ", real_id_counter)
 
             city_name = "Saint-Petersburg"
             date = datetime.datetime(int(note[3]), int(note[2]), int(note[1]))

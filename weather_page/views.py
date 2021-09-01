@@ -58,10 +58,14 @@ def index(request):
 
 
     processing_temp = list()
-    processing_max_temp = processing_min_temp = 0
+    processing_ave_temp = processing_max_temp = processing_min_temp = 0
     processing_wind = list()
+    processing_ave_wind = 0
     processing_wind_dir = list()
+    processing_ave_wind_dir = 0
     processing_precip = list()
+    processing_precip_ave = 0
+    processing_days_with_clouds = processing_days_without_clouds = 0
 
     print("We find name", last_query_city[-1].name)
     weather_data_from_db = list(Weather.objects.filter(
@@ -69,28 +73,54 @@ def index(request):
         date__gte=last_query_city[-1].end_date).filter(date__gte=last_query_city[-1].start_date))
 
     print("LIST = ", weather_data_from_db)
-
     w_counter = len(weather_data_from_db)
 
     for elm in weather_data_from_db:
-        processing_temp.append(elm.temp)
+        #pick-up temp for the required period
+        local_temp = int(elm.temp[1:])
+        if elm.temp[0] == '+':
+            processing_temp.append(local_temp)
+        elif elm.temp[0] == '-':
+            processing_temp.append(-local_temp)
+        # pick-up wind for the required period
+        local_wind = elm.wind.split('м/с')
+        processing_wind.append(int(local_wind[0]))
+        # pick-up wind direction for the required period
+        processing_wind_dir.append(elm.wind_direction)
+        # pick-up percipation for the required period
+        if elm.precipitation == 'No precipitation':
+            processing_days_without_clouds += 1
+        processing_precip.append(elm.precipitation)
 
 
     if weather_data_from_db:
         print("City in database")
 
-        data_list = [weather_data_from_db[0].city_name, weather_data_from_db[0].temp, weather_data_from_db[0].precipitation,
-                     weather_data_from_db[0].wind, weather_data_from_db[0].wind_direction]
+        print('processing_temp = ', processing_temp)
+        processing_ave_temp = round(sum(processing_temp) / w_counter, 1)
+        processing_max_temp = max(processing_temp)
+        processing_min_temp = min(processing_temp)
+
+        print('processing_wind = ', processing_wind)
+        processing_ave_wind = round(sum(processing_wind) / w_counter, 1)
+        print('processing_wind_dir = ', processing_wind_dir)
+        processing_ave_wind_dir = processing_wind_dir[0]
+        print('processing_precip = ', processing_precip)
+        processing_precip_ave = processing_precip[0]
+
+        processing_days_without_clouds = round((processing_days_without_clouds / w_counter) * 100, 1)
+        processing_days_with_clouds = 100 - processing_days_without_clouds
 
         city_info = {
-            'city': data_list[0],
-            'temp_average': data_list[1],
-            'temp_min': data_list[1],
-            'temp_mid': data_list[1],
-            'temp_max': data_list[1],
-            'clouds': data_list[2],
-            'wind': data_list[3],
-            'wind_deg': data_list[4],
+            'city': weather_data_from_db[0].city_name,
+            'temp_average': processing_ave_temp,
+            'temp_min': processing_min_temp,
+            'temp_max': processing_max_temp,
+            'clouds': processing_precip_ave,
+            'days_with_clouds': processing_days_with_clouds,
+            'days_without_clouds': processing_days_without_clouds,
+            'wind': processing_ave_wind,
+            'wind_deg': processing_ave_wind_dir,
         }
     else:
         print("City NOT in database -> find current temp")
@@ -111,9 +141,10 @@ def index(request):
             'city': data_list[0],
             'temp_average': data_list[1],
             'temp_min': data_list[1],
-            'temp_mid': data_list[1],
             'temp_max': data_list[1],
             'clouds': data_list[2],
+            'days_with_clouds': 'unknown',
+            'days_without_clouds': 'unknown',
             'wind': data_list[3],
             'wind_deg': data_list[4],
         }
