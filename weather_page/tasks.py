@@ -9,9 +9,7 @@ django.setup()
 from .models import Weather
 
 os.environ['DJANGO_SETTINGS_MODULE']='weather_application.settings'
-# from django import db
-#
-# import sqlite3 as sql
+
 
 def parsing_gismeteo(year, month)->list:
 
@@ -28,11 +26,8 @@ def parsing_gismeteo(year, month)->list:
 
     for row in table.findAll('tr')[0:]:
         data_row = row.findAll('td')
-        # print(data_row)
         day = data_row[0].text
-        # print(day)
         temp = data_row[1].text
-        # print('temp ', temp)
         precipitation = data_row[4].find('img')
         if precipitation:
             precipitation = (precipitation.get('src').split('/')[-1]).split('.')[0]
@@ -65,6 +60,7 @@ def reset_real_count_id():
     real_counter = 0
     return real_counter
 
+
 month_counter = 12
 required_month = required_year = 0
 
@@ -81,7 +77,7 @@ def periodic_task():
         print(today_is)
         required_month = today_is.month - 1
         required_year = today_is.year
-
+    # create separate func for calcu
     if month_counter > 0:
 
         if required_month == 1:
@@ -98,8 +94,9 @@ def periodic_task():
 
         weather_list = parsing_gismeteo(prepare_year_value, prepare_month_value)
 
+        #create separate func
         for note in weather_list:
-            print(note)
+
             real_id_counter = real_count_id()
             print("real_id_counter = ", real_id_counter)
 

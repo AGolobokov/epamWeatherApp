@@ -41,13 +41,12 @@
                 <h1>Current data</h1>
                 <div class="alert alert-danger">
                     <b>City:</b> {{ info.city }}<br>
-                    <b>Temperature:</b> {{ info.temp }}<sup>o</sup><br>
+                    <b>Temperature:</b> {{ info.temp_average }}<sup>o</sup><br>
                     <b>Temperature min:</b> {{ info.temp_min }}<sup>o</sup><br>
                     <b>Temperature max:</b> {{ info.temp_max }}<sup>o</sup><br>
                     <b>Clouds:</b> {{ info.clouds }} <br>
                     <b>Wind:</b> {{ info.wind }} m/s <br>
                     <b>Wind direction:</b> {{ info.wind_deg }}  <br>
-                    <img src="http://openweathermap.org/img/w/{{ info.icon }}.png" alt="Pic" class="img-thumbnail">
                 </div>
 
             </div>

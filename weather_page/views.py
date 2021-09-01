@@ -1,6 +1,6 @@
 import requests
 from django.shortcuts import render
-from .models import City
+from .models import City, Weather
 from .forms import CityForm
 import datetime
 from bs4 import BeautifulSoup
@@ -43,41 +43,83 @@ def index(request):
 
     form = CityForm()
 
+
+
     last_query_city = list(City.objects.all())
+
     if last_query_city == []:
-        last_query_city[-1].start_date = datetime.datetime(2021, 8, 25)
-        last_query_city[-1].end_date = datetime.datetime(2021, 8, 25)
+        #create default object
+        last_query_city.append(City("Saint-Petersburg", datetime.datetime(2021, 8, 25), datetime.datetime(2021, 8, 25)))
     else:
-        print("Start date")
+        print(last_query_city[-1].name)
+        print("Start required date")
         print(last_query_city[-1].start_date)
 
-        print("End date")
+        print("End required date")
         print(last_query_city[-1].end_date)
 
-    requested_year = last_query_city[-1].start_date.year
+    # city_name = models.CharField(max_length=50)
+    # date = models.DateField()
+    # temp = models.CharField(max_length=50)
+    # precipitation = models.CharField(max_length=50)
+    # wind = models.CharField(max_length=50)
+    # wind_direction = models.CharField(max_length=50)
 
-    requested_month = 0
-    if last_query_city[-1].start_date.month >= 10:
-        requested_month = last_query_city[-1].start_date.month
+    processing_temp = processing_max_temp = processing_min_temp = 0
+    processing_wind = processing_wind_dir = 0
+    processing_precip = 0
+
+    print("WE fine name", last_query_city[-1].name)
+    weather_data_from_db = list(Weather.objects.filter(city_name=last_query_city[-1].name).exclude(date__gte=last_query_city[-1].end_date).filter(date__gte=last_query_city[-1].start_date))
+
+    print("LIST = ", weather_data_from_db)
+
+    for elm in weather_data_from_db:
+        print('NOTE', elm)
+        print(elm.city_name)
+        print(elm.date)
+
+    if weather_data_from_db:
+        print("City in database")
+
+        data_list = [weather_data_from_db[0].city_name, weather_data_from_db[0].temp, weather_data_from_db[0].precipitation,
+                     weather_data_from_db[0].wind, weather_data_from_db[0].wind_direction]
+
+        city_info = {
+            'city': data_list[0],
+            'temp_average': data_list[1],
+            'temp_min': data_list[1],
+            'temp_mid': data_list[1],
+            'temp_max': data_list[1],
+            'clouds': data_list[2],
+            'wind': data_list[3],
+            'wind_deg': data_list[4],
+        }
     else:
-        requested_month = '0' + str(last_query_city[-1].start_date.month)
+        print("City NOT in database -> find current temp")
+        requested_year = last_query_city[-1].start_date.year
 
-    requested_day = last_query_city[-1].start_date.day
+        requested_month = 0
+        if last_query_city[-1].start_date.month >= 10:
+            requested_month = last_query_city[-1].start_date.month
+        else:
+            requested_month = '0' + str(last_query_city[-1].start_date.month)
 
-    data_list = parsing_gismeteo(str(requested_year), str(requested_month), str(requested_day))
-    print(data_list)
+        requested_day = last_query_city[-1].start_date.day
 
-    city_info = {
-        'city': data_list[0],
-        'temp': data_list[1],
-        'temp_min': data_list[1],
-        'temp_mid': data_list[1],
-        'temp_max': data_list[1],
-        'icon': 'A',
-        'clouds': data_list[2],
-        'wind': data_list[3],
-        'wind_deg': data_list[4],
-    }
+        data_list = parsing_gismeteo(str(requested_year), str(requested_month), str(requested_day))
+        print(data_list)
+
+        city_info = {
+            'city': data_list[0],
+            'temp_average': data_list[1],
+            'temp_min': data_list[1],
+            'temp_mid': data_list[1],
+            'temp_max': data_list[1],
+            'clouds': data_list[2],
+            'wind': data_list[3],
+            'wind_deg': data_list[4],
+        }
 
     context = {'info': city_info, 'form': form}
     return render(request, 'weather/index.html', context)
