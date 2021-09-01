@@ -43,41 +43,38 @@ def index(request):
 
     form = CityForm()
 
-
-
     last_query_city = list(City.objects.all())
 
     if last_query_city == []:
         #create default object
         last_query_city.append(City("Saint-Petersburg", datetime.datetime(2021, 8, 25), datetime.datetime(2021, 8, 25)))
-    else:
-        print(last_query_city[-1].name)
-        print("Start required date")
-        print(last_query_city[-1].start_date)
+    # else:
+    #     print(last_query_city[-1].name)
+    #     print("Start required date")
+    #     print(last_query_city[-1].start_date)
+    #
+    #     print("End required date")
+    #     print(last_query_city[-1].end_date)
 
-        print("End required date")
-        print(last_query_city[-1].end_date)
 
-    # city_name = models.CharField(max_length=50)
-    # date = models.DateField()
-    # temp = models.CharField(max_length=50)
-    # precipitation = models.CharField(max_length=50)
-    # wind = models.CharField(max_length=50)
-    # wind_direction = models.CharField(max_length=50)
+    processing_temp = list()
+    processing_max_temp = processing_min_temp = 0
+    processing_wind = list()
+    processing_wind_dir = list()
+    processing_precip = list()
 
-    processing_temp = processing_max_temp = processing_min_temp = 0
-    processing_wind = processing_wind_dir = 0
-    processing_precip = 0
-
-    print("WE fine name", last_query_city[-1].name)
-    weather_data_from_db = list(Weather.objects.filter(city_name=last_query_city[-1].name).exclude(date__gte=last_query_city[-1].end_date).filter(date__gte=last_query_city[-1].start_date))
+    print("We find name", last_query_city[-1].name)
+    weather_data_from_db = list(Weather.objects.filter(
+        city_name=last_query_city[-1].name).exclude(
+        date__gte=last_query_city[-1].end_date).filter(date__gte=last_query_city[-1].start_date))
 
     print("LIST = ", weather_data_from_db)
 
+    w_counter = len(weather_data_from_db)
+
     for elm in weather_data_from_db:
-        print('NOTE', elm)
-        print(elm.city_name)
-        print(elm.date)
+        processing_temp.append(elm.temp)
+
 
     if weather_data_from_db:
         print("City in database")

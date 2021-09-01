@@ -77,7 +77,7 @@ def periodic_task():
         print(today_is)
         required_month = today_is.month - 1
         required_year = today_is.year
-    # create separate func for calcu
+    # create separate func for calc time
     if month_counter > 0:
 
         if required_month == 1:
