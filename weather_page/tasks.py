@@ -116,13 +116,6 @@ def periodic_task():
         required_month = required_month - 1
         month_counter = month_counter - 1
 
-
-
-
-
-
-
-
     print("End period task")
 
 
