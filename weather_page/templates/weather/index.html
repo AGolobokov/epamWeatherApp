@@ -38,17 +38,18 @@
             </div>
 
             <div class="col-4 offset-1">
-                <h1>Current data</h1>
+                <h1>Current data </h1>
                 <div class="alert alert-danger">
+                    <b> Data source:</b> {{ info.src }} <br>
                     <b>City:</b> {{ info.city }}<br>
                     <b>Temperature:</b> {{ info.temp_average }}<sup>o</sup><br>
                     <b>Temperature min:</b> {{ info.temp_min }}<sup>o</sup><br>
                     <b>Temperature max:</b> {{ info.temp_max }}<sup>o</sup><br>
-                    <b>Clouds:</b> {{ info.clouds }} <br>
+                    <b>Precipitation (average):</b> {{ info.clouds }} <br>
                     <b>Days with clouds:</b> {{ info.days_with_clouds }} % <br>
                     <b>Days without clouds:</b> {{ info.days_without_clouds }} % <br>
-                    <b>Wind:</b> {{ info.wind }} m/s <br>
-                    <b>Wind direction:</b> {{ info.wind_deg }}  <br>
+                    <b>Wind (average):</b> {{ info.wind }} m/s <br>
+                    <b>Wind direction (average):</b> {{ info.wind_deg }}  <br>
                 </div>
 
             </div>
