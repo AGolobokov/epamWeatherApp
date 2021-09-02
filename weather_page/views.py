@@ -105,8 +105,12 @@ def index(request):
         processing_ave_wind = round(sum(processing_wind) / w_counter, 1)
         print('processing_wind_dir = ', processing_wind_dir)
         processing_ave_wind_dir = processing_wind_dir[0]
+        processing_ave_wind_dir_dict = {i:processing_wind_dir.count(i) for i in processing_wind_dir}
+        print(processing_ave_wind_dir_dict)
         print('processing_precip = ', processing_precip)
         processing_precip_ave = processing_precip[0]
+        processing_precip_ave_dict = {i:processing_precip.count(i) for i in processing_precip}
+        print(processing_precip_ave_dict)
 
         processing_days_without_clouds = round((processing_days_without_clouds / w_counter) * 100, 1)
         processing_days_with_clouds = 100 - processing_days_without_clouds
