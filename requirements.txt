@@ -1,0 +1,5 @@
+Django==3.2.6
+celery==4.3.0
+redis==3.5.3
+requests
+bs4
