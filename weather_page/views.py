@@ -59,12 +59,12 @@ def index(request):
     processing_precip_ave = 0
     processing_days_with_clouds = processing_days_without_clouds = 0
 
-    print("We find name", last_query_city[-1].name)
+    # print("We find name", last_query_city[-1].name)
     weather_data_from_db = list(Weather.objects.filter(
         city_name=last_query_city[-1].name).exclude(
         date__gte=last_query_city[-1].end_date).filter(date__gte=last_query_city[-1].start_date))
 
-    print("LIST = ", weather_data_from_db)
+    # print("LIST = ", weather_data_from_db)
     w_counter = len(weather_data_from_db)
 
     for elm in weather_data_from_db:
@@ -90,30 +90,30 @@ def index(request):
         processing_precip_list.append(elm.precipitation)
 
     if weather_data_from_db:
-        print("City in database")
+        # print("City in database")
 
         processing_ave_temp = round(sum(processing_temp_list) / w_counter, 1)
         processing_max_temp = max(processing_temp_list)
         processing_min_temp = min(processing_temp_list)
 
-        print('processing_wind_list = ', processing_wind_list)
+        # print('processing_wind_list = ', processing_wind_list)
         processing_ave_wind = round(sum(processing_wind_list) / w_counter, 1)
 
-        print('processing_wind_dir_list = ', processing_wind_dir_list)
+        # print('processing_wind_dir_list = ', processing_wind_dir_list)
         processing_ave_wind_dir_dict = {i:processing_wind_dir_list.count(i) for i in processing_wind_dir_list}
-        print(processing_ave_wind_dir_dict)
+        # print(processing_ave_wind_dir_dict)
         processing_ave_wind_dir = max(processing_ave_wind_dir_dict, key=processing_ave_wind_dir_dict.get)
-        print(processing_ave_wind_dir)
+        # print(processing_ave_wind_dir)
 
-        print('processing_precip_list = ', processing_precip_list)
+        # print('processing_precip_list = ', processing_precip_list)
 
         processing_precip_ave_dict = {i:processing_precip_list.count(i) for i in processing_precip_list}
         processing_precip_ave = max(processing_precip_ave_dict, key=processing_precip_ave_dict.get)
-        print(processing_precip_ave_dict)
-        print(processing_precip_ave)
+        # print(processing_precip_ave_dict)
+        # print(processing_precip_ave)
 
         processing_days_without_clouds = round((processing_days_without_clouds / w_counter) * 100, 1)
-        print(processing_days_without_clouds)
+        # print(processing_days_without_clouds)
         processing_days_with_clouds = round((100 - processing_days_without_clouds), 1)
 
         city_info = {
@@ -129,7 +129,7 @@ def index(request):
             'wind_deg': processing_ave_wind_dir,
         }
     else:
-        print("City NOT in database -> find current temp")
+        # print("City NOT in database -> find current temp")
         requested_year = last_query_city[-1].start_date.year
 
         requested_month = 0
@@ -139,10 +139,8 @@ def index(request):
             requested_month = '0' + str(last_query_city[-1].start_date.month)
 
         requested_day = last_query_city[-1].start_date.day
-        print()
 
         data_list = parsing_gismeteo(str(requested_year), str(requested_month), str(requested_day))
-        print(data_list)
 
         city_info = {
             'src': f'https://www.gismeteo.ru/ {requested_year}.{requested_month}.{requested_day}',
